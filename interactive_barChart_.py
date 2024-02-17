@@ -95,8 +95,6 @@ class InteractivePlot(QMainWindow):
         self.y_values = []
         self.canvas.mpl_connect('button_press_event', self.on_click)
 
-
-
     def chart_parameters(self):
 
         self.df.index = [str(index) for index in self.df.index]
