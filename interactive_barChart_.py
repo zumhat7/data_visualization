@@ -2,7 +2,7 @@ import sys
 import matplotlib.pyplot as plt
 import pyqtgraph as pg
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QLabel,QPushButton
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QFont
 from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -74,12 +74,19 @@ class InteractivePlot(QMainWindow):
         vbox.addLayout(hbox)
 
         self.textbox = QLineEdit(self)
-        self.textbox.setMinimumSize(250, 40)
+        self.textbox.setMinimumSize(300, 50)
+        #self.textbox.setGeometry(10, 10, 80, 60)
         self.textbox.setPlaceholderText('Please give the value for control: ')
+        self.textbox.setFont(QFont("Arial", 12))
         self.textbox.returnPressed.connect(self.on_textbox_entered)
         hbox.addWidget(self.textbox)
 
         self.button = QPushButton("RESET")
+        self.button.setGeometry(10,10,70,50)
+        font = self.button.font()
+        font.setPointSize(14)
+        self.button.setFont(font)
+        self.button.setStyleSheet("background-color: rgb(210, 69, 69)")
         self.button.clicked.connect(self.on_button_click)
         hbox.addWidget(self.button)
 
@@ -88,10 +95,6 @@ class InteractivePlot(QMainWindow):
         self.y_values = []
         self.canvas.mpl_connect('button_press_event', self.on_click)
 
-
-  
-
-  
     def chart_parameters(self):
 
         self.df.index = [str(index) for index in self.df.index]
