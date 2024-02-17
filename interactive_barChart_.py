@@ -1,13 +1,9 @@
-import sys
-import matplotlib.pyplot as plt
-import pyqtgraph as pg
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QLabel,QPushButton
+from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QLabel,QPushButton
 from PyQt5.QtGui import QPixmap, QFont
 from PyQt5 import QtCore
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from PIL import Image
 import numpy as np
 
 class InteractivePlot(QMainWindow):
@@ -123,7 +119,6 @@ class InteractivePlot(QMainWindow):
     def color_bars(self, value1, value2):
         colors = []
         value = np.mean([value1,value2])
-        print("value1: ",value1," --------------------------- value2: ",value2)
         categories0, categories, height, bottom, std_err, yrangeL = self.chart_parameters()
 
         colors = {0: "#330000", 0.09:"#990000", 0.18:"#FF0000",0.27:"#FF6666",0.36:"#FF99CC",0.45:"#FFCCE5"
@@ -131,16 +126,11 @@ class InteractivePlot(QMainWindow):
         bars = self.ax.bar(categories, height-bottom, bottom = bottom, width = 1)
         i = 0
 
-        print("Sample: ", value1, " - ", value2)
-        print("--------------------------------------------------------------------------")
         for bar in bars:
             max = height[i] + std_err[i]
             min = height[i] - std_err[i]
 
             rate_value = 1-((max-value)/(2*std_err[i]))
-            print(categories[i], ":",height[i]," - ",std_err[i])
-            print("max:", max," - min:",min)
-            print("height:", bar.get_height())
             for x in list(colors.keys()):
                 min_rate = x
                 max_rate = x+0.09
@@ -201,7 +191,7 @@ class InteractivePlot(QMainWindow):
             self.color_bars(new_height, new_height)
             self.canvas.draw()
         except ValueError:
-            print('Lütfen geçerli bir sayı girin.')
+            print('Please give a valid number.')
     def on_button_click(self):
         categories0, categories, height, bottom, std_err, yrangeL = self.chart_parameters()
         bars = self.ax.bar(categories, height-bottom, bottom = bottom, width = 1)
@@ -250,10 +240,7 @@ class InteractivePlot(QMainWindow):
             except:
                 k = 0
             
-        print("click_count:",self.click_count)
-            
         if event.button == 1 and self.click_count < 2:  # Sadece sol fare düğmesi tıklamalarını ele al ve 2 çizgi çizildiyse devre dışı bırak
-            print("click_count:",self.click_count)
             x_value = int(event.xdata)
             y_value = event.ydata
             new_height = y_value
@@ -261,18 +248,14 @@ class InteractivePlot(QMainWindow):
             self.line_list.append(self.line)
             self.ax.add_line(self.line)
             self.y_values.append(y_value)
-            print(self.y_values)
             self.color_bars(self.y_values[0], self.y_values[-1])
             self.canvas.draw()
             self.cid = self.canvas.mpl_connect('button_press_event', self.on_click)
             self.click_count += 1
 
-
-        print("click_count:",self.click_count, type(self.click_count))
         self.button.clicked.connect(self.on_button_click)
         
         if self.click_count == 2:
-            print(self.canvas.callbacks.callbacks)
             #self.canvas.mpl_disconnect(self.canvas.callbacks.callbacks['button_press_event'][0]) 
             if self.cid is not None:
                 self.canvas.mpl_disconnect(self.cid)
